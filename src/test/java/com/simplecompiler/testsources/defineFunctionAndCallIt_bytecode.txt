@@ -1,0 +1,21 @@
+label mul2
+enter
+load-arg 1
+save
+load-arg 0
+add
+leave
+
+label main
+enter
+load-long 32
+save
+load-long 16
+save
+call mul2 2
+save
+call print 1
+load-long 3
+save
+call print 1
+leave

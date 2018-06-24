@@ -1,0 +1,8 @@
+(fun mul2 (n n1)
+        (+ n n1))
+
+(fun main (args)
+    (print (mul2 32 16))
+    (print 3)
+)
+
