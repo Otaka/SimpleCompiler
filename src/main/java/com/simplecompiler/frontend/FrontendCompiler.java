@@ -46,13 +46,13 @@ public class FrontendCompiler {
         if (isLong(atom)) {
             return "load-long " + atom + "\n";
         } else if (isArg(atom, parsingContext)) {
-            for(int i=0;i<parsingContext.getCurrentFunctionArgNames().size();i++){
-                String parameterName=parsingContext.getCurrentFunctionArgNames().get(i);
-                if(atom.equals(parameterName)){
+            for (int i = 0; i < parsingContext.getCurrentFunctionArgNames().size(); i++) {
+                String parameterName = parsingContext.getCurrentFunctionArgNames().get(i);
+                if (atom.equals(parameterName)) {
                     return "load-arg " + i + "\n";
                 }
             }
-            throw new IllegalArgumentException("Cannot find argument ["+atom+"]");
+            throw new IllegalArgumentException("Cannot find argument [" + atom + "]");
         } else {
             return "load-var " + atom + "\n";
         }
@@ -70,7 +70,7 @@ public class FrontendCompiler {
             return processDefineExpression(list, parsingContext);
         } else if (operator.equals("if")) {
             return processIf(list, parsingContext);
-        } else if (operator.equals("+") || operator.equals("-") || operator.equals("<")) {
+        } else if (operator.equals("+") || operator.equals("-") || operator.equals("/") || operator.equals("*") || operator.equals("=") || operator.equals("<") || operator.equals(">")) {
             return processMathAndLogicExpression(operator, list, parsingContext);
         } else {
             return processFunctionCall(list, parsingContext);
@@ -117,13 +117,13 @@ public class FrontendCompiler {
             registerArgName((String) param, parsingContext);
         }
 
-        StringBuilder bodyExpression=new StringBuilder();
-        for(int i=3;i<args.size();i++){
+        StringBuilder bodyExpression = new StringBuilder();
+        for (int i = 3; i < args.size(); i++) {
             String compiledAst = processAst(args.get(i), parsingContext);
             bodyExpression.append(compiledAst);
         }
 
-        String result = "label " + functionLabel+"\n";
+        String result = "label " + functionLabel + "\n";
         result += ("enter\n" + bodyExpression + "leave\n");
         return result;
     }
@@ -148,8 +148,20 @@ public class FrontendCompiler {
             case "-":
                 result += "sub";
                 break;
+            case "*":
+                result += "mul";
+                break;
+            case "/":
+                result += "div";
+                break;
             case "<":
                 result += "less";
+                break;
+            case ">":
+                result += "more";
+                break;
+            case "=":
+                result += "eq";
                 break;
             default:
                 break;

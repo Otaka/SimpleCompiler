@@ -1,21 +1,18 @@
 package com.simplecompiler.frontend;
 
-import java.nio.charset.StandardCharsets;
-import org.apache.commons.io.IOUtils;
+import com.simplecompiler.BaseTest;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class FrontendCompilerTest {
+public class FrontendCompilerTest extends BaseTest {
 
     @Test
     public void testCompile() throws Exception {
-        FrontendCompiler frontEndCompiler = new FrontendCompiler();
-        String scriptString = IOUtils.resourceToString("/com/simplecompiler/testsources/defineFunctionAndCallIt.scs", StandardCharsets.UTF_8);
-        String result = frontEndCompiler.compile(scriptString, "defineFunctionAndCallIt.scs");
-        String expectedBytecodeString = IOUtils.resourceToString("/com/simplecompiler/testsources/defineFunctionAndCallIt_bytecode.txt", StandardCharsets.UTF_8);
+        String result = compileFileFromResource("/com/simplecompiler/testsources/defineFunctionAndCallIt.scs");
+        String expectedBytecodeString = readFileFromResource("/com/simplecompiler/testsources/defineFunctionAndCallIt_bytecode.txt");
         Assert.assertEquals(
-                expectedBytecodeString.trim(),
-                result.trim()
+                expectedBytecodeString,
+                result
         );
     }
 }

@@ -1,0 +1,6 @@
+(fun main()
+    (print (+ 9 10))
+    (print (- 25 7))
+    (print (* 4 9))
+    (print (/ 10 2))
+)
