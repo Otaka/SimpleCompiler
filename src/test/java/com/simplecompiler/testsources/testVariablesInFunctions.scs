@@ -1,0 +1,16 @@
+(fun a(arg)
+    (var localVar (- 10 arg))
+    (print localVar)
+    (print arg)
+)
+
+
+(fun main()
+    (var localVar 8)
+    (var localVar2 (- localVar 4))
+    (print localVar)
+    (print localVar2)
+    (a localVar)
+    (print localVar)
+    (print localVar2)
+)

@@ -1,0 +1,8 @@
+(fun recursiveFunction(arg)
+    (print arg)
+    (if (= arg 1) 
+        (recursiveFunction 0)
+        (print 56))
+)
+
+(fun main() (recursiveFunction 1))

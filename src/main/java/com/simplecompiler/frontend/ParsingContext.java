@@ -15,15 +15,30 @@ public class ParsingContext {
     private String fileName;
     private StringBuilderWithPadding byteCodeSource = new StringBuilderWithPadding("  ");
     private List<String> currentFunctionArgNames = new ArrayList<>();
-    private int currentIndex;
+    private List<String> currentFunctionLocalVariables = new ArrayList<>();
     private Map<String, String> functions = new HashMap<String, String>();
+    private List<GlobalVar> globalVariables = new ArrayList<>();
+    private int currentIndexToGenerateIds;
+    private String currentFunctionName;
+
+    public List<GlobalVar> getGlobalVariables() {
+        return globalVariables;
+    }
+
+    public void setCurrentFunctionName(String currentFunctionName) {
+        this.currentFunctionName = currentFunctionName;
+    }
+
+    public String getCurrentFunctionName() {
+        return currentFunctionName;
+    }
 
     public Map<String, String> getFunctions() {
         return functions;
     }
 
     public String getNextLabel(String typePrefix) {
-        return typePrefix + fileName.replace(".", "_") + "_" + (currentIndex++) + "";
+        return typePrefix + fileName.replace(".", "_") + "_" + (currentIndexToGenerateIds++) + "";
     }
 
     public StringBuilderWithPadding getByteCodeSource() {
@@ -34,7 +49,12 @@ public class ParsingContext {
         return currentFunctionArgNames;
     }
 
-    public void clearArgNames() {
+    public List<String> getCurrentFunctionLocalVariables() {
+        return currentFunctionLocalVariables;
+    }
+
+    public void exitFromFunction() {
+        currentFunctionArgNames.clear();
         currentFunctionArgNames.clear();
     }
 

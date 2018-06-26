@@ -1,0 +1,22 @@
+(fun main()
+    (print 
+        (if (< 1 2) 
+            (@
+                (print 1)
+                (print 2)
+                (print 3)
+                (var x 4)
+                (print x)
+                (+ 1 x)
+            ) 
+            (@
+                (print 5)
+                (print 6)
+                (print 7)
+                (var x 8)
+                (print x)
+                (+ 1 x)
+            ) 
+        )
+    )
+)

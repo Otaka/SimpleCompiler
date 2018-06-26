@@ -1,0 +1,5 @@
+(fun main()
+    (print (bitand  182 37)) ;36
+    (print (bitor  182 37)) ;183
+    (print (bitxor  182 37 )) ;147
+)

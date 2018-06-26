@@ -1,16 +1,16 @@
 label mul2
-enter
-load-arg 1
-save
+enter 0 2
 load-arg 0
-add
-leave
+save
+load-arg 1
+sub
+leave 0 2
 
 label main
-enter
-load-long 32
+enter 0 1
+load-long 10
 save
-load-long 16
+load-long 8
 save
 call mul2 2
 save
@@ -18,4 +18,4 @@ call print 1
 load-long 3
 save
 call print 1
-leave
+leave 0 1

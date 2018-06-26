@@ -14,7 +14,7 @@ import org.parboiled.Rule;
 public class Grammar extends BaseParser<Object> {
 
     public Rule start() {
-        return Sequence(push(new ListStartMark()), OneOrMore(sexpr()), collectToList());
+        return Sequence(whitespace(), Sequence(push(new ListStartMark()), OneOrMore(sexpr()), collectToList()), whitespace(), EOI);
     }
 
     Rule sexpr() {
@@ -47,7 +47,7 @@ public class Grammar extends BaseParser<Object> {
                         FirstOf(
                                 symbol(),
                                 number()
-                        ), 
+                        ),
                         push(match())
                 )
         );
@@ -118,7 +118,7 @@ public class Grammar extends BaseParser<Object> {
                 Sequence("\r", Optional("\n"))
         );
     }
-    
+
     protected static class ListStartMark {
     };
 

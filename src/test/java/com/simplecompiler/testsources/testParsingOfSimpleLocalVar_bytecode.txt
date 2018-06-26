@@ -1,0 +1,60 @@
+$global-var-count 2
+label INIT_BLOCK
+enter 0 0
+load-long 98
+store-global-var 0
+load-long 99
+store-global-var 1
+leave 0 0
+
+label myfunction
+enter 2 1
+load-long 23
+store-local-var 0
+load-long 24
+store-local-var 1
+load-local-var 0
+save
+call print 1
+load-local-var 1
+save
+call print 1
+load-arg 0
+save
+call print 1
+load-global-var 0
+save
+call print 1
+load-global-var 1
+save
+call print 1
+leave 2 1
+
+label main
+enter 2 0
+load-long 6
+store-local-var 0
+load-long 8
+store-local-var 1
+load-local-var 0
+save
+call print 1
+load-local-var 1
+save
+call print 1
+load-long 1
+save
+call myfunction 1
+load-local-var 0
+save
+call print 1
+load-local-var 1
+save
+call print 1
+load-global-var 0
+save
+call print 1
+load-global-var 1
+save
+call print 1
+leave 2 0

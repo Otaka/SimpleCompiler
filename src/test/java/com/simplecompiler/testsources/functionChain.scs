@@ -1,0 +1,20 @@
+(fun a(arg)
+    (print (+ arg 10))
+    (b arg)
+    (print (+ arg 10))
+)
+
+(fun b(arg)
+    (print (+ arg 100))
+    (c arg)
+    (print (+ arg 100))
+)
+
+(fun c(arg)
+    (print (+ arg 1000))
+    (print (+ arg 1000))
+)
+
+(fun main() 
+    (a 5)
+)
