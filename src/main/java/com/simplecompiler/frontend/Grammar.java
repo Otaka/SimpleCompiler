@@ -43,33 +43,77 @@ public class Grammar extends BaseParser<Object> {
     Rule atom() {
         return Sequence(
                 whitespace(),
-                Sequence(
-                        FirstOf(
-                                symbol(),
-                                number()
-                        ),
-                        push(match())
+                FirstOf(
+                        number(),
+                        symbol()
                 )
         );
     }
 
     Rule symbol() {
         return Sequence(
-                letter(),
-                ZeroOrMore(
-                        FirstOf(
-                                letter(),
-                                digit()
+                Sequence(
+                        letter(),
+                        ZeroOrMore(
+                                FirstOf(
+                                        letter(),
+                                        digit()
+                                )
                         )
-                )
-        );
+                ),
+                push(match()));
     }
 
     Rule number() {
+        return FirstOf(
+                hexNumber(),
+                binNumber(),
+                regularNumber()
+        );
+    }
+
+    Rule regularNumber() {
         return Sequence(
-                Optional("-"),
-                OneOrMore(
-                        digit()
+                Sequence(
+                        Optional("-"),
+                        OneOrMore(
+                                digit()
+                        )
+                ),
+                push(match())
+        );
+    }
+
+    Rule hexNumber() {
+        return Sequence(
+                Sequence(
+                        "0x",
+                        OneOrMore(
+                                FirstOf(
+                                        digit(),
+                                        "A", "B", "C", "D", "E", "F",
+                                        "a", "b", "c", "d", "e", "f"
+                                )
+                        )
+                ),
+                push(
+                        String.valueOf(Integer.parseInt(match().substring(2), 16))
+                )
+        );
+    }
+    
+    Rule binNumber() {
+        return Sequence(
+                Sequence(
+                        "0b",
+                        OneOrMore(
+                                FirstOf(
+                                        "0","1"
+                                )
+                        )
+                ),
+                push(
+                        String.valueOf(Integer.parseInt(match().substring(2), 2))
                 )
         );
     }
@@ -79,6 +123,16 @@ public class Grammar extends BaseParser<Object> {
     }
 
     Rule letter() {
+        return FirstOf(
+                CharRange('a', 'z'),
+                CharRange('A', 'Z'),
+                CharRange('0', '9'),
+                "~", "|", "-", "+", "!", "\\", "$", "%", "&", "*",
+                ".", "/", ":", "<", "=", ">", "?", "@", "^", "_"
+        );
+    }
+
+    Rule letterWithoutNumbers() {
         return FirstOf(
                 CharRange('a', 'z'),
                 CharRange('A', 'Z'),

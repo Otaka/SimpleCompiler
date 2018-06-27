@@ -4,6 +4,7 @@ import com.simplecompiler.BaseTest;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import javax.swing.JOptionPane;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -17,12 +18,20 @@ public class InterpreterTest extends BaseTest {
     @Ignore
     public void testRecursionFibonacchi() throws IOException {
         System.out.println("Fibonnachi call. Performance test. Can run for a very long time.");
+        JOptionPane.showMessageDialog(null, "Started fibonacchi test");
         long startTime = System.currentTimeMillis();
         List result = executeScript("/com/simplecompiler/testsources/fibCalc.scs");
         long endTime = System.currentTimeMillis();
-        System.out.println("Total time = " + (endTime - startTime) + "ms. Result = " + result);
+        String message = "Total time = " + (endTime - startTime) + "ms. Result = " + result;
+        System.out.println(message);
+        JOptionPane.showMessageDialog(null, message);
     }
 
+    @Test
+    public void testNumberBasis() throws IOException {
+        checkEqual(executeScript("/com/simplecompiler/testsources/numberBasis.scs"), Arrays.asList(26,3));
+    }
+    
     @Test
     public void testNativeFunctionInvocation() throws IOException {
         checkEqual(executeScript("/com/simplecompiler/testsources/printTwoValues.scs"), Arrays.asList(1, 2, 3, 4));

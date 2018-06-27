@@ -1,0 +1,4 @@
+(fun main()
+    (print 0x1A)
+    (print 0b11)
+)
