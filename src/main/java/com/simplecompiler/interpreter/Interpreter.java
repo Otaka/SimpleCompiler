@@ -45,193 +45,171 @@ public class Interpreter {
     }
 
     private void executeBytecode(ExecutionState executionState, String[] bytecode, Map<String, Integer> labelIndexes) {
+        OUTER:
         while (true) {
             String line = bytecode[executionState.ip];
             executionState.ip++;
-            if (line.startsWith("save")) {
-                executionState.pushToStack(executionState.accumulator);
+            if (line.isEmpty()) {
                 continue;
             }
-
-            if (line.startsWith("load-long")) {
-                int value = Integer.parseInt(line.substring("load-long".length()).trim());
-                executionState.accumulator = value;
-                continue;
+            String command;
+            int spaceIndex = line.indexOf(' ');
+            if (spaceIndex == -1) {
+                command = line;
+            } else {
+                command = line.substring(0, spaceIndex);
             }
-            if (line.startsWith("call")) {
-                String[] parts = line.split(" ", -1);
-                String functionName = parts[1];
-                int argsCount = Integer.parseInt(parts[2]);
-                if (labelIndexes.containsKey(functionName)) {
-                    //executionState.stackIndex -= argsCount;
-                    executionState.pushToStack(executionState.ip);
-                    //executionState.reserveOnStack(argsCount);
-                    executionState.ip = labelIndexes.get(functionName);
-                } else {
-                    executeInternalFunction(executionState, functionName, argsCount);
+            switch (command) {
+                case "save":
+                    executionState.pushToStack(executionState.accumulator);
+                    break;
+                case "load-long":
+                    int value = Integer.parseInt(line.substring("load-long".length()).trim());
+                    executionState.accumulator = value;
+                    break;
+                case "call":
+                    String[] parts = line.split(" ", -1);
+                    String functionName = parts[1];
+                    int argsCount = Integer.parseInt(parts[2]);
+                    if (labelIndexes.containsKey(functionName)) {
+                        //executionState.stackIndex -= argsCount;
+                        executionState.pushToStack(executionState.ip);
+                        //executionState.reserveOnStack(argsCount);
+                        executionState.ip = labelIndexes.get(functionName);
+                    } else {
+                        executeInternalFunction(executionState, functionName, argsCount);
+                    }
+                    break;
+                case "store-local-var": {
+                    int varIndex = extractIntArgumentFromString("store-local-var", line);
+                    int variableStackOffset = executionState.frameIndex + 1 + varIndex;
+                    executionState.stack[variableStackOffset] = executionState.accumulator;
+                    break;
                 }
-                continue;
-            }
-            if (line.startsWith("store-local-var")) {
-                int varIndex = extractIntArgumentFromString("store-local-var", line);
-                int variableStackOffset = executionState.frameIndex + 1 + varIndex;
-                executionState.stack[variableStackOffset] = executionState.accumulator;
-                continue;
-            }
-            if (line.startsWith("load-local-var")) {
-                int varIndex = extractIntArgumentFromString("load-local-var", line);
-                int variableStackOffset = executionState.frameIndex + 1 + varIndex;
-                executionState.accumulator = executionState.stack[variableStackOffset];
-                continue;
-            }
-            if (line.startsWith("load-global-var")) {
-                int varIndex = extractIntArgumentFromString("load-global-var", line);
-                executionState.accumulator = executionState.stack[varIndex];
-                continue;
-            }
-            if (line.startsWith("store-global-var")) {
-                int varIndex = extractIntArgumentFromString("store-global-var", line);
-                executionState.stack[varIndex] = executionState.accumulator;
-                continue;
-            }
-//            if (line.startsWith("store-arg")) {
-//                int argIndex = extractIntArgumentFromString("store-arg", line);
-//                int variableStackOffset = executionState.frameIndex - 1 - argIndex;
-//                executionState.stack[variableStackOffset] = executionState.accumulator;
-//                continue;
-//            }
-            if (line.startsWith("load-arg")) {
-                int argIndex = extractIntArgumentFromString("load-arg", line);
-                int variableStackOffset = executionState.frameIndex - 2 - argIndex;
-                executionState.accumulator = executionState.stack[variableStackOffset];
-                continue;
-            }
-
-            if (line.startsWith("add")) {
-                executionState.accumulator += executionState.popFromStack();
-                continue;
-            }
-            if (line.startsWith("sub")) {
-                executionState.accumulator -= executionState.popFromStack();
-                continue;
-            }
-            if (line.startsWith("mul")) {
-                executionState.accumulator *= executionState.popFromStack();
-                continue;
-            }
-            if (line.startsWith("div")) {
-                executionState.accumulator /= executionState.popFromStack();
-                continue;
-            }
-            if (line.startsWith("less")) {
-                executionState.accumulator = executionState.accumulator < executionState.popFromStack() ? 1 : 0;
-                continue;
-            }
-            if (line.startsWith("not")) {
-                executionState.accumulator = executionState.accumulator == 0 ? 1 : 0;
-                continue;
-            }
-
-            if (line.startsWith("eq")) {
-                executionState.accumulator = executionState.accumulator == executionState.popFromStack() ? 1 : 0;
-                continue;
-            }
-            if (line.startsWith("neq")) {
-                executionState.accumulator = executionState.accumulator != executionState.popFromStack() ? 1 : 0;
-                continue;
-            }
-            if (line.startsWith("more")) {
-                int operand=executionState.popFromStack();
-                executionState.accumulator = executionState.accumulator > operand ? 1 : 0;
-                continue;
-            }
-            if (line.startsWith("bitand")) {
-                executionState.accumulator = executionState.accumulator & executionState.popFromStack();
-                continue;
-            }
-            if (line.startsWith("bitor")) {
-                executionState.accumulator = executionState.accumulator | executionState.popFromStack();
-                continue;
-            }
-            if (line.startsWith("bitxor")) {
-                executionState.accumulator = executionState.accumulator ^ executionState.popFromStack();
-                continue;
-            }
-            if (line.startsWith("lshift")) {
-                executionState.accumulator = executionState.accumulator << executionState.popFromStack();
-                continue;
-            }
-            if (line.startsWith("rshift")) {
-                executionState.accumulator = executionState.accumulator >> executionState.popFromStack();
-                continue;
-            }
-            if (line.startsWith("urshift")) {
-                executionState.accumulator = executionState.accumulator >>> executionState.popFromStack();
-                continue;
-            }
-            if (line.startsWith("and")) {
-                boolean operand = executionState.popFromStack() != 0;
-                executionState.accumulator = executionState.accumulator != 0 && operand ? 1 : 0;
-                continue;
-            }
-            if (line.startsWith("or")) {
-                boolean operand= executionState.popFromStack() != 0;
-                executionState.accumulator = executionState.accumulator != 0 || operand ? 1 : 0;
-                continue;
-            }
-            if (line.startsWith("branch-false")) {
-                if (executionState.accumulator == 0) {
-                    String label = line.substring("branch-false".length()).trim();
+                case "load-local-var": {
+                    int varIndex = extractIntArgumentFromString("load-local-var", line);
+                    int variableStackOffset = executionState.frameIndex + 1 + varIndex;
+                    executionState.accumulator = executionState.stack[variableStackOffset];
+                    break;
+                }
+                case "load-global-var": {
+                    int varIndex = extractIntArgumentFromString("load-global-var", line);
+                    executionState.accumulator = executionState.stack[varIndex];
+                    break;
+                }
+                case "store-global-var": {
+                    int varIndex = extractIntArgumentFromString("store-global-var", line);
+                    executionState.stack[varIndex] = executionState.accumulator;
+                    break;
+                }
+                case "load-arg": {
+                    int argIndex = extractIntArgumentFromString("load-arg", line);
+                    int variableStackOffset = executionState.frameIndex - 2 - argIndex;
+                    executionState.accumulator = executionState.stack[variableStackOffset];
+                    break;
+                }
+                case "add":
+                    executionState.accumulator += executionState.popFromStack();
+                    break;
+                case "sub":
+                    executionState.accumulator -= executionState.popFromStack();
+                    break;
+                case "mul":
+                    executionState.accumulator *= executionState.popFromStack();
+                    break;
+                case "div":
+                    executionState.accumulator /= executionState.popFromStack();
+                    break;
+                case "less":
+                    executionState.accumulator = executionState.accumulator < executionState.popFromStack() ? 1 : 0;
+                    break;
+                case "not":
+                    executionState.accumulator = executionState.accumulator == 0 ? 1 : 0;
+                    break;
+                case "eq":
+                    executionState.accumulator = executionState.accumulator == executionState.popFromStack() ? 1 : 0;
+                    break;
+                case "neq":
+                    executionState.accumulator = executionState.accumulator != executionState.popFromStack() ? 1 : 0;
+                    break;
+                case "more": {
+                    int operand = executionState.popFromStack();
+                    executionState.accumulator = executionState.accumulator > operand ? 1 : 0;
+                    break;
+                }
+                case "bitand":
+                    executionState.accumulator = executionState.accumulator & executionState.popFromStack();
+                    break;
+                case "bitor":
+                    executionState.accumulator = executionState.accumulator | executionState.popFromStack();
+                    break;
+                case "bitxor":
+                    executionState.accumulator = executionState.accumulator ^ executionState.popFromStack();
+                    break;
+                case "lshift":
+                    executionState.accumulator = executionState.accumulator << executionState.popFromStack();
+                    break;
+                case "rshift":
+                    executionState.accumulator = executionState.accumulator >> executionState.popFromStack();
+                    break;
+                case "urshift":
+                    executionState.accumulator = executionState.accumulator >>> executionState.popFromStack();
+                    break;
+                case "and": {
+                    boolean operand = executionState.popFromStack() != 0;
+                    executionState.accumulator = executionState.accumulator != 0 && operand ? 1 : 0;
+                    break;
+                }
+                case "or": {
+                    boolean operand = executionState.popFromStack() != 0;
+                    executionState.accumulator = executionState.accumulator != 0 || operand ? 1 : 0;
+                    break;
+                }
+                case "branch-false":
+                    if (executionState.accumulator == 0) {
+                        String label = line.substring("branch-false".length()).trim();
+                        if (!labelIndexes.containsKey(label)) {
+                            throw new IllegalArgumentException("Cannot find label [" + label + "]");
+                        }
+                        int destIndex = labelIndexes.get(label);
+                        executionState.ip = destIndex;
+                    }
+                    break;
+                case "branch":
+                    String label = line.substring("branch".length()).trim();
                     if (!labelIndexes.containsKey(label)) {
                         throw new IllegalArgumentException("Cannot find label [" + label + "]");
                     }
                     int destIndex = labelIndexes.get(label);
                     executionState.ip = destIndex;
-                }
-                continue;
-            }
-
-            if (line.startsWith("branch")) {
-                String label = line.substring("branch".length()).trim();
-                if (!labelIndexes.containsKey(label)) {
-                    throw new IllegalArgumentException("Cannot find label [" + label + "]");
-                }
-                int destIndex = labelIndexes.get(label);
-                executionState.ip = destIndex;
-                continue;
-            }
-
-            if (line.startsWith("enter ")) {
-                //save frame
-                executionState.pushToStack(executionState.frameIndex);
-                executionState.frameIndex = executionState.stackIndex;
-                //reserve space for local variables
-                int localVarsCount = extractIntArgumentFromString("enter", line);
-                executionState.reserveOnStack(localVarsCount);
-                continue;
-            }
-
-            if (line.startsWith("leave")) {
-                int localVarsCount = extractIntArgumentFromString("leave", line);
-                int argumentsCount = extractLastIntArgumentFromString("leave", line);
-                executionState.freeFromStack(localVarsCount);
-                executionState.frameIndex = executionState.popFromStack();
-                executionState.ip = executionState.popFromStack();
-                if (executionState.ip == -1) {
+                    break;
+                case "enter": {
+                    //save frame
+                    executionState.pushToStack(executionState.frameIndex);
+                    executionState.frameIndex = executionState.stackIndex;
+                    //reserve space for local variables
+                    int localVarsCount = extractIntArgumentFromString("enter", line);
+                    executionState.reserveOnStack(localVarsCount);
                     break;
                 }
-
-                executionState.freeFromStack(argumentsCount);
-                continue;
+                case "leave": {
+                    int localVarsCount = extractIntArgumentFromString("leave", line);
+                    int argumentsCount = extractLastIntArgumentFromString("leave", line);
+                    executionState.freeFromStack(localVarsCount);
+                    executionState.frameIndex = executionState.popFromStack();
+                    executionState.ip = executionState.popFromStack();
+                    if (executionState.ip == -1) {
+                        break OUTER;
+                    }
+                    executionState.freeFromStack(argumentsCount);
+                    break;
+                }
+                case "label":
+                    break;
+                default:
+                    throw new IllegalStateException("Unknown bytecode [" + line + "]");
+                    
             }
-            if (line.startsWith("label")) {
-                continue;
-            }
-            if (line.isEmpty()) {
-                continue;
-            }
-
-            throw new IllegalStateException("Unknown bytecode [" + line + "]");
         }
     }
 

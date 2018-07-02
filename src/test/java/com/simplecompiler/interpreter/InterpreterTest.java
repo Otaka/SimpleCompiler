@@ -29,9 +29,9 @@ public class InterpreterTest extends BaseTest {
 
     @Test
     public void testNumberBasis() throws IOException {
-        checkEqual(executeScript("/com/simplecompiler/testsources/numberBasis.scs"), Arrays.asList(26,3));
+        checkEqual(executeScript("/com/simplecompiler/testsources/numberBasis.scs"), Arrays.asList(26, 3));
     }
-    
+
     @Test
     public void testNativeFunctionInvocation() throws IOException {
         checkEqual(executeScript("/com/simplecompiler/testsources/printTwoValues.scs"), Arrays.asList(1, 2, 3, 4));

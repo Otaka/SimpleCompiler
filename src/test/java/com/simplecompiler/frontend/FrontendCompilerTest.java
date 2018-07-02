@@ -15,7 +15,7 @@ public class FrontendCompilerTest extends BaseTest {
                 result
         );
     }
-    
+
     @Test
     public void testVariablesInFunctionParsing() throws Exception {
         String result = compileFileFromResource("/com/simplecompiler/testsources/testParsingOfSimpleLocalVar.scs");

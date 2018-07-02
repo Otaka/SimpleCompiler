@@ -1,6 +1,5 @@
 package com.simplecompiler.interpreter;
 
-import com.simplecompiler.interpreter.NativeFunction;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -26,6 +25,7 @@ public class NativeFunctionManager {
             if (processedClasses.contains(clazz)) {
                 throw new IllegalArgumentException("You already register functions from class " + clazz.getSimpleName());
             }
+
             processedClasses.add(clazz);
 
             for (Method method : clazz.getDeclaredMethods()) {
@@ -48,8 +48,8 @@ public class NativeFunctionManager {
             clazz = clazz.getSuperclass();
         }
     }
-    
-    public Function findFunction(String name){
+
+    public Function findFunction(String name) {
         return functionsMap.get(name);
     }
 

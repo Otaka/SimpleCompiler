@@ -1,6 +1,5 @@
 package com.simplecompiler.utils;
 
-
 /**
  * @author sad
  */
@@ -70,7 +69,7 @@ public class StringBuilderWithPadding {
     }
 
     public StringBuilderWithPadding print(String value) {
-        String[] values =value.split("\n",-1);
+        String[] values = value.split("\n", -1);
         int lastIndex = values.length - 1;
         for (int i = 0; i < values.length; i++) {
             String val = values[i];

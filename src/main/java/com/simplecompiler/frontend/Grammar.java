@@ -101,14 +101,14 @@ public class Grammar extends BaseParser<Object> {
                 )
         );
     }
-    
+
     Rule binNumber() {
         return Sequence(
                 Sequence(
                         "0b",
                         OneOrMore(
                                 FirstOf(
-                                        "0","1"
+                                        "0", "1"
                                 )
                         )
                 ),
